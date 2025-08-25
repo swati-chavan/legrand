@@ -197,7 +197,8 @@ iframe {
 /*------------------------------------------------------------------
 [  ]*/
 .contact1-form {
-  width: 390px;
+  /* width: 390px; */
+  width: 100%;
 }
 
 .contact1-form-title {
@@ -217,6 +218,7 @@ input.input1 {
 }
 input.input1 + .shadow-input1 {
   border-radius: 25px;
+  margin-left:15px ;
 }
 
 select.input1 {
@@ -226,6 +228,8 @@ select.input1 {
 }
 select.input1 + .shadow-input1 {
   border-radius: 25px;
+    margin-left:15px ;
+
 }
 
 textarea.input1 {
@@ -235,6 +239,8 @@ textarea.input1 {
 }
 textarea.input1 + .shadow-input1 {
   border-radius: 25px;
+  margin-left:15px ;
+
 }
 
 /*---------------------------------------------*/
@@ -262,7 +268,7 @@ textarea.input1 + .shadow-input1 {
   bottom: 0;
   left: 0;
   z-index: -1;
-  width: 100%;
+  width: calc(100% - 30px);
   height: 100%;
   box-shadow: 0px 0px 0px 0px;
   color: rgba(87,184,70, 0.5);

@@ -1,4 +1,3 @@
-// src/SearchPage.js
 import React, { useState } from 'react';
 import './SearchPage.css';
 import { useHistory } from 'react-router-dom';
@@ -8,15 +7,25 @@ const SearchPage = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const history = useHistory();
 
-const history = useHistory();
+  const handleEdit = (record) => {
+    console.log("record",record);
+    history.push({
+      pathname: `/edit/${record._id}`,
+      state: record
+    });
+  };
 
-const handleEdit = (record) => {
-  history.push({
-    pathname: `/edit/${record._id}`,
-    state: record
-  });
-};
+  // Helper function to get value by description from fields array
+  const getFieldValue = (fields, description) => {
+    const field = fields.find(f => f.description === description);
+    if (field) {
+      if (typeof field.value === 'boolean') return field.value ? 'Yes' : 'No';
+      return field.value;
+    }
+    return 'N/A';
+  };
 
   const handleSearch = async () => {
     if (!search.trim()) return;
@@ -44,7 +53,7 @@ const handleEdit = (record) => {
           <input
             type="text"
             className="form-control search-input"
-            placeholder="Search by name or email..."
+            placeholder="Search by any field..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -61,38 +70,44 @@ const handleEdit = (record) => {
           {!loading && results.length === 0 && <p>No results found.</p>}
         </div>
 
-        {results.map((record) => (
-          <div className="card mb-3" key={record._id}>
-            <div className="card-body">
-              <div className="d-flex flex-column flex-lg-row align-items-center" >
-                <span className="avatar avatar-text rounded-3 me-4 mb-2">
-                  {record.fullName ? record.fullName.slice(0, 2).toUpperCase() : 'NA'}
-                </span>
-                <div className="row flex-fill align-items-center" style={{width:"100%"}}>
-                  <div className="col-sm-3">
-                    <h4 className="h5">{record.fullName}</h4>
-                    <p>{record.email}</p>
-                    <p>{record.phoneNumber}</p>
-                  </div>
-                  <div className="col-sm-3 py-2">
-                    <span className="badge bg-secondary p-2 mr-2">{record.status}</span>
-                    <span className="badge bg-info p-2">{record.submissionDate}</span>
-                  </div>
-                  <div className="col-sm-3 text-lg-end">
-                    <p className="mb-0"><strong>Comments:</strong> {record.comments}</p>
-                    {/* Optional: Add edit or delete buttons here */}
-                  </div>
+        {results.map((record) => {
+          const fields = record.fields || [];
 
-                 <div className="col-sm-3 text-lg-end">
-                  <button                     className="btn btn-dark me-2" onClick={() => handleEdit(record)}>Edit</button>
+          // Extract main values
+          const title = getFieldValue(fields, "Request for Change No: RFC_DEP1234 partNumber shortDescription");
+          const dateRequest = getFieldValue(fields, "Date Request");
+          const requestedBy = getFieldValue(fields, "Requested By");
+          const status = getFieldValue(fields, "Status");
+          const comments = getFieldValue(fields, "Reason for Denial"); // or use another field if comments exists
 
-                 </div>
-
+          return (
+            <div className="card mb-3" key={record._id}>
+              <div className="card-body">
+                <div className="d-flex flex-column flex-lg-row align-items-center" >
+                  <span className="avatar avatar-text rounded-3 me-4 mb-2">
+                    {title ? title.slice(0, 2).toUpperCase() : 'NA'}
+                  </span>
+                  <div className="row flex-fill align-items-center" style={{width:"100%"}}>
+                    <div className="col-sm-3">
+                      <h4 className="h5">{title}</h4>
+                      <p><strong>Date Request:</strong> {dateRequest}</p>
+                      <p><strong>Requested By:</strong> {requestedBy}</p>
+                    </div>
+                    <div className="col-sm-3 py-2">
+                      <span className={`badge ${status === 'Approved' ? 'bg-success' : 'bg-secondary'} p-2`}>{status}</span>
+                    </div>
+                    <div className="col-sm-4 text-lg-end">
+                      <p className="mb-0"><strong>Comments:</strong> {comments}</p>
+                    </div>
+                    <div className="col-sm-2 text-lg-end">
+                      <button className="btn btn-dark me-2" onClick={() => handleEdit(record)}>Edit</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
