@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './SearchPage.css';
 import { useHistory } from 'react-router-dom';
+import { ClipLoader } from 'react-spinners'; // Or use any other spinner you prefer
 
 const SearchPage = () => {
   const [search, setSearch] = useState('');
@@ -66,7 +67,12 @@ const SearchPage = () => {
       <div className="container mt-4">
         <div className="text-center mb-4">
           <h3>Results</h3>
-          {loading && <p>Loading...</p>}
+          {/* {loading && <p>Loading...</p>} */}
+              {loading && (
+            <div className="loading-spinner">
+              <ClipLoader color="#36d7b7" loading={loading} size={50} />
+            </div>
+          )}
           {!loading && results.length === 0 && <p>No results found.</p>}
         </div>
 

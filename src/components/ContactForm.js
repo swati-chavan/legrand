@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { ClipLoader } from 'react-spinners'; // Or use any other spinner you prefer
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ContactForm() {
   const location = useLocation();
   const record = location.state; // The record passed from SearchPage
+  const [isLoading, setIsLoading] = useState(false);
+  const [buttonText, setButtonText] = useState(record ? 'Update' : 'Submit');
+  const [isDisabled, setIsDisabled] = useState(false); // To disable the button during submission
+
 
   const [formData, setFormData] = useState({
     // RFC
@@ -286,6 +293,14 @@ const handleSubmit = async (e) => {
     };
   }).filter(Boolean); // Remove nulls
 
+
+    setIsLoading(true);
+    setIsDisabled(true); // Disable the button
+    setButtonText('Processing...'); // Change button text to "Processing..."
+
+
+  await new Promise(resolve => setTimeout(() => resolve(), 2000)); // Directly resolve inside setTimeout
+
   const isUpdate = !!formData._id;
 
   const payload = isUpdate
@@ -306,7 +321,8 @@ const handleSubmit = async (e) => {
     });
 
     if (response.ok) {
-      alert(isUpdate ? 'Record updated successfully!' : 'Form submitted successfully!');
+      toast.success(isUpdate ? 'Record updated successfully!' : 'Form submitted successfully!');
+        setButtonText(isUpdate ? 'Update' : 'Submit'); // Set back to original text after submission
 
 
             if (!isUpdate) {
@@ -339,11 +355,19 @@ const handleSubmit = async (e) => {
       }
 
     } else {
-      alert('Failed to submit form.');
+      toast.error('Failed to submit form.');
+
     }
   } catch (error) {
     console.error('Request error:', error);
-    alert('An error occurred.');
+      toast.error('An error occurred.');
+
+    // alert('An error occurred.');
+  }  finally {
+    // Hide loader after submission (whether success or error)
+    setIsLoading(false);
+        setIsDisabled(false); // Re-enable the button
+
   }
 };
 
@@ -358,6 +382,12 @@ const handleSubmit = async (e) => {
 
         <form className="contact1-form" onSubmit={handleSubmit}>
           <span className="contact1-form-title">{record ? 'Edit Submission' : 'Get in touch'}</span>
+          {/* Loading Spinner */}
+          {isLoading && (
+            <div className="loading-spinner">
+              <ClipLoader color="#36d7b7" loading={isLoading} size={50} />
+            </div>
+          )}
 
           {/* Stage 1: RFC */}
           <h3 className="contact1-form-title" style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>
@@ -628,10 +658,19 @@ const handleSubmit = async (e) => {
           <div className='row'>
 
           <div className="container-contact1-form-btn col-md-12" style={{ marginTop: '2rem' }}>
-            <button className="contact1-form-btn" type="submit">
-              <span>
-                {record ? 'Update' : 'Submit'}
-                <i className="fa fa-long-arrow-right" aria-hidden="true"></i>
+            <button 
+              className="contact1-form-btn" 
+              type="submit" 
+              disabled={isDisabled} // Disable button when submitting
+            >
+                              {isLoading &&               <ClipLoader color="#fdfdfdff"  loading={isLoading}  size={20} />}
+
+              <span style={{ marginLeft: '10px' }}>
+              
+
+          {/* // <ClipLoader color="#fff" size={20} style={{ marginLeft: '10px' }} /> */}
+          
+            {buttonText} {/* Show Processing... text while loading */}
               </span>
             </button>
           </div>
@@ -639,6 +678,18 @@ const handleSubmit = async (e) => {
 
         </form>
       </div>
+
+
+      
+      {/* Add ToastContainer for notifications */}
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+      />
     </div>
   );
 }
