@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Change Request Form</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  h2 { background: #eee; padding: 10px; border-radius: 5px; }
+  fieldset { margin-bottom: 20px; padding: 15px; border-radius: 8px; border: 1px solid #ccc; }
+  label { display: block; margin-top: 10px; font-weight: bold; }
+  input[type="text"], input[type="date"], input[type="datetime-local"], select, textarea {
+    width: 100%; max-width: 400px; padding: 6px; margin-top: 4px; box-sizing: border-box;
+  }
+  .inline-label { display: inline-block; font-weight: normal; margin-left: 6px; margin-right: 15px; }
+  .checkbox-group label, .radio-group label { font-weight: normal; margin-right: 15px; }
+  .hidden { display: none; }
+  button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<h1>Change Request Form (ECN001)</h1>
+
+<form id="changeRequestForm">
+
+  <!-- Stage 1: RFC -->
+  <fieldset>
+    <legend><h2>RFC</h2></legend>
+
+    <label for="rfcNumber">Request for Change No: RFC_DEP1234 partNumber shortDescription</label>
+    <input type="text" id="rfcNumber" name="rfcNumber" required />
+
+    <label for="dateRequest">Date Request <small>(Press CTRL + ; for date hint)</small></label>
+    <input type="datetime-local" id="dateRequest" name="dateRequest" required />
+
+    <label for="requestedBy">Requested By</label>
+    <input type="text" id="requestedBy" name="requestedBy" required />
+  </fieldset>
+
+  <!-- Stage 2: Affected Product information -->
+  <fieldset>
+    <legend><h2>Affected Product Information</h2></legend>
+
+    <label for="effectedItems">Effected Items in Syspro</label>
+    <input type="text" id="effectedItems" name="effectedItems" />
+
+    <label for="productDescription">Product's Description</label>
+    <input type="text" id="productDescription" name="productDescription" />
+
+    <label for="ufs">UF(s)</label>
+    <input type="text" id="ufs" name="ufs" />
+
+    <label for="sms">SM(s)</label>
+    <input type="text" id="sms" name="sms" />
+
+    <label for="pcb">PCB</label>
+    <input type="text" id="pcb" name="pcb" />
+
+    <label for="revisionSoftwareNumber">Revision and or Software number</label>
+    <input type="text" id="revisionSoftwareNumber" name="revisionSoftwareNumber" />
+  </fieldset>
+
+  <!-- Stage 3: Issue Description -->
+  <fieldset>
+    <legend><h2>Issue Description</h2></legend>
+
+    <label for="issueCircumstance">Issue circumstance:</label>
+    <select id="issueCircumstance" name="issueCircumstance" required>
+      <option value="">-- Select --</option>
+      <option value="Design Error">Design Error</option>
+      <option value="Manufacturing Defect">Manufacturing Defect</option>
+      <option value="Customer Complaint">Customer Complaint</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <label for="changeReason">Change Reason/Problem Statement:</label>
+    <textarea id="changeReason" name="changeReason" rows="3" required></textarea>
+
+    <label for="proposedSolution">Proposed Solution:</label>
+    <textarea id="proposedSolution" name="proposedSolution" rows="3" required></textarea>
+
+    <label for="costSaved">Cost to be Saved Breakdown (Include Labor):</label>
+    <textarea id="costSaved" name="costSaved" rows="2"></textarea>
+  </fieldset>
+
+  <!-- Stage 4: Type of Change (checkboxes) -->
+  <fieldset>
+    <legend><h2>Type of Change</h2></legend>
+    <div class="checkbox-group">
+      <input type="checkbox" id="correctiveAction" name="typeOfChange" value="Corrective Action" />
+      <label for="correctiveAction">Corrective Action</label>
+
+      <input type="checkbox" id="safetyIssue" name="typeOfChange" value="Safety Issue" />
+      <label for="safetyIssue">Safety Issue</label>
+
+      <input type="checkbox" id="costImprovement" name="typeOfChange" value="Cost Improvement" />
+      <label for="costImprovement">Cost Improvement</label>
+
+      <input type="checkbox" id="manufacturability" name="typeOfChange" value="Manufacturability" />
+      <label for="manufacturability">Manufacturability</label>
+
+      <input type="checkbox" id="customerRequest" name="typeOfChange" value="Customer Request" />
+      <label for="customerRequest">Customer Request</label>
+
+      <input type="checkbox" id="otherChange" name="typeOfChange" value="Other" />
+      <label for="otherChange">Other</label>
+    </div>
+  </fieldset>
+
+  <!-- Stage 5: RFC Approval (radio buttons and conditional section) -->
+  <fieldset>
+    <legend><h2>RFC Approval</h2></legend>
+
+    <label for="dateSigned">Date Signed:</label>
+    <input type="date" id="dateSigned" name="dateSigned" />
+
+    <label for="signedBy">Signed by:</label>
+    <input type="text" id="signedBy" name="signedBy" />
+
+    <label>Status:</label>
+    <div class="radio-group">
+      <input type="radio" id="statusApproved" name="status" value="Approved" />
+      <label for="statusApproved">Approved</label>
+
+      <input type="radio" id="statusDenied" name="status" value="Denied" />
+      <label for="statusDenied">Denied</label>
+
+      <input type="radio" id="statusPending" name="status" value="Pending" />
+      <label for="statusPending">Pending</label>
+
+      <input type="radio" id="statusOnHold" name="status" value="On Hold" />
+      <label for="statusOnHold">On Hold</label>
+    </div>
+
+    <div id="reasonForDenialSection" class="hidden">
+      <label>Reason for Denial:</label>
+      <div class="radio-group">
+        <input type="radio" id="reasonQuality" name="reasonForDenial" value="Quality issue" />
+        <label for="reasonQuality">Quality issue</label>
+
+        <input type="radio" id="reasonCost" name="reasonForDenial" value="Cost issue" />
+        <label for="reasonCost">Cost issue</label>
+
+        <input type="radio" id="reasonTechnical" name="reasonForDenial" value="Technical infeasibility" />
+        <label for="reasonTechnical">Technical infeasibility</label>
+
+        <input type="radio" id="reasonOther" name="reasonForDenial" value="Other" />
+        <label for="reasonOther">Other</label>
+      </div>
+    </div>
+  </fieldset>
+
+  <button type="submit">Submit Form</button>
+
+</form>
+
+<script>
+  // Show/hide Reason for Denial if Status = Denied
+  const statusRadios = document.querySelectorAll('input[name="status"]');
+  const reasonSection = document.getElementById('reasonForDenialSection');
+
+  statusRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (document.getElementById('statusDenied').checked) {
+        reasonSection.classList.remove('hidden');
+        document.querySelectorAll('input[name="reasonForDenial"]').forEach(input => {
+          input.required = true;
+        });
+      } else {
+        reasonSection.classList.add('hidden');
+        document.querySelectorAll('input[name="reasonForDenial"]').forEach(input => {
+          input.required = false;
+          input.checked = false;
+        });
+      }
+    });
+  });
+
+  // Form submission handler
+  document.getElementById('changeRequestForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const output = [];
+
+    // RFC stage
+    output.push({
+      responsibility: "Requester",
+      description: "Request for Change No: RFC_DEP1234 partNumber shortDescription",
+      value: formData.get('rfcNumber') || ""
+    });
+    output.push({
+      responsibility: "Requester",
+      description: "Date Request",
+      value: formData.get('dateRequest') || ""
+    });
+    output.push({
+      responsibility: "Requester",
+      description: "Requested By",
+      value: formData.get('requestedBy') || ""
+    });
+
+    // Affected Product information
+    output.push({
+      responsibility: "Requester",
+      description: "Effected Items in Syspro",
+      value: formData.get('effectedItems') || ""
+    });
+    output.push({
+      responsibility: "Requester",
+      description: "Product's Description",
+      value: formData.get('productDescription') || ""
+    });
+    output.push({
+      responsibility: "Requester",
+      description: "UF(s)",
+      value: formData.get('ufs') || ""
+    });
+    output.push({
+      responsibility: "Requester",
+      description: "SM(s)",
+      value: formData.get('sms') || ""
+    });
+    output.push({
+      responsibility: "Requester",
+      description: "PCB",
+      value: formData.get('pcb') || ""
+    });
+    output.push({
+      responsibility: "Requester",
+      description: "Revision and or Software number",
+      value: formData.get('revisionSoftwareNumber') || ""
+    });
+
+    // Issue Description
+    output.push({
+      responsibility: "Requester",
+      description: "Issue circumstance:",
+      value: formData.get('issueCircumstance') || ""
+    });
+    output.push({
+      responsibility: "Requester",
+      description: "Change Reason/Problem Statement:",
+      value: formData.get('changeReason') || ""
+    });
+    output.push({
+      responsibility: "Requester",
+      description: "Proposed Solution:",
+      value: formData.get('proposedSolution') || ""
+    });
+    output.push({
+      responsibility: "Requester",
+      description: "Cost to be Saved Breakdown (Include Labor)",
+      value: formData.get('costSaved') || ""
+    });
+
+    // Type of Change (checkboxes) - can be multiple values
+    const checkedTypes = formData.getAll('typeOfChange');
+    output.push({
+      responsibility: "Requester",
+      description: "Type of Change",
+      value: checkedTypes.length > 0 ? checkedTypes : []
+    });
+
+    // RFC Approval
+    output.push({
+      responsibility: "Dep Manager",
+      description: "Date Signed",
+      value: formData.get('dateSigned') || ""
+    });
+    output.push({
+      responsibility: "Dep Manager",
+      description: "Signed by",
+      value: formData.get('signedBy') || ""
+    });
+    output.push({
+      responsibility: "Dep Manager",
+      description: "Status",
+      value: formData.get('status') || ""
+    });
+
+    if (formData.get('status') === 'Denied') {
+      output.push({
+        responsibility: "Dep Manager",
+        description: "Reason for Denial",
+        value: formData.get('reasonForDenial') || ""
+      });
+    }
+
+    alert("Form data to save:\n\n" + JSON.stringify(output, null, 2));
+    // Yahan API call karke data DB mein save kar sakte hain
+  });
+</script>
+
+</body>
+</html>
