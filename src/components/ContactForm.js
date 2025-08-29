@@ -299,7 +299,7 @@ const handleSubmit = async (e) => {
     setButtonText('Processing...'); // Change button text to "Processing..."
 
 
-  await new Promise(resolve => setTimeout(() => resolve(), 2000)); // Directly resolve inside setTimeout
+  await new Promise(resolve => setTimeout(() => resolve(), 2000)); // Directly resolve inside setTimeout test
 
   const isUpdate = !!formData._id;
 
