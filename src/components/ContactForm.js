@@ -290,7 +290,9 @@ const handleSubmit = async (e) => {
 
   const payload = isUpdate
     ? { _id: formData._id, data: transformedData } // Include _id for updates
-    : { data: transformedData }; // Create only needs data
+    : { data: transformedData }; // Create only needs datads
+
+
 
   const endpoint = isUpdate
     ? 'https://legrandfunctionapp-g0g4gdgyc6c3a8dy.centralindia-01.azurewebsites.net/api/UpdateUserForm?code=LhEicokpEx2lcYRDJXAlhPNKrsz9BMduYMCZ02Zie2nVAzFutTUjBg=='
