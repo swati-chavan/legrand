@@ -269,13 +269,23 @@ const rfcApprovalOptions = {
 };
 
 
-  const handleChange = (e) => {
-    const { name, type, value, checked } = e.target;
+const handleChange = (e) => {
+  const { name, type, value, checked } = e.target;
+
+  // If the field is a date, convert it to UTC
+  if (type === 'date') {
+    const dateInUTC = new Date(value).toISOString();  // Convert to UTC format
+    setFormData({
+      ...formData,
+      [name]: dateInUTC,
+    });
+  } else {
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     });
-  };
+  }
+};
 
 const handleSubmit = async (e) => {
   e.preventDefault();
@@ -414,7 +424,7 @@ const handleSubmit = async (e) => {
               type="date"
               name="dateRequest"
               placeholder="Date Request"
-              value={formData.dateRequest}
+              value={formData.dateRequest ? formData.dateRequest.split('T')[0] : ''} // Extract only the date part
               onChange={handleChange}
               required
             />
