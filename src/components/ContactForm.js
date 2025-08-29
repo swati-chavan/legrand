@@ -272,20 +272,29 @@ const rfcApprovalOptions = {
 const handleChange = (e) => {
   const { name, type, value, checked } = e.target;
 
-  // If the field is a date, convert it to UTC
-  if (type === 'date') {
+  // If the field is a radio button for date, store it as a string but convert to UTC when saving
+  if (name === 'dateSigned' && type === 'radio') {
+    // Format the selected value as a string (e.g., "2025-08-29" for display in the UI)
+     const dateInUTC = new Date(value).toISOString();  // Convert to UTC format
+
+    setFormData({
+      ...formData,
+      [name]: dateInUTC,
+    });
+  } else if (type === 'date') {
+    // If the input is a date field, convert the value to UTC format
     const dateInUTC = new Date(value).toISOString();  // Convert to UTC format
     setFormData({
       ...formData,
       [name]: dateInUTC,
     });
   } else {
+    // For other fields, just update the formData normally
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     });
-  }
-};
+  }};
 
 const handleSubmit = async (e) => {
   e.preventDefault();
@@ -635,35 +644,43 @@ const handleSubmit = async (e) => {
           </div>
 
           {/* Stage 5: RFC Approval */}
-          {/* Stage 5: RFC Approval */}
+          {/* Stage 5: RFC Approval  flow */}
           <h3 className="contact1-form-title" style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>
             Stage 5: RFC Approval
           </h3>
 
-          <div className="row">
-            {Object.entries(rfcApprovalOptions).map(([fieldName, options]) => (
-              <div key={fieldName} className="wrap-input1 col-md-6" style={{ marginBottom: "1rem" }}>
-                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>
-                  {fieldName
-                    .replace(/([A-Z])/g, ' $1')       // Split camelCase
-                    .replace(/^./, str => str.toUpperCase())} {/* Capitalize */}
-                </label>
-                {options.map((option, index) => (
-                  <label key={index} style={{ display: 'block' }}>
-                    <input
-                      type="radio"
-                      name={fieldName}
-                      value={option}
-                      checked={formData[fieldName] === option}
-                      onChange={handleChange}
-                    />
-                    {option}
-                  </label>
-                ))}
-                <span className="shadow-input1"></span>
-              </div>
-            ))}
-          </div>
+       <div className="row">
+  {Object.entries(rfcApprovalOptions).map(([fieldName, options]) => (
+    <div key={fieldName} className="wrap-input1 col-md-6" style={{ marginBottom: "1rem" }}>
+      <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>
+        {fieldName
+          .replace(/([A-Z])/g, ' $1')  // Split camelCase
+          .replace(/^./, str => str.toUpperCase())} {/* Capitalize */}
+      </label>
+      {options.map((option, index) => {
+        // Check if the field is a date field (like 'dateSigned')
+        const isDateField = fieldName === 'dateSigned';
+        
+        // If it's a date field, convert to UTC format for comparison
+        const formattedOption = isDateField ? new Date(option).toISOString() : option;
+
+        return (
+          <label key={index} style={{ display: 'block' }}>
+            <input
+              type="radio"
+              name={fieldName}
+              value={option}  // The string date value displayed on UI
+              checked={formData[fieldName] === formattedOption}  // Compare with UTC format for date or string
+              onChange={handleChange}
+            />
+            {option}
+          </label>
+        );
+      })}
+      <span className="shadow-input1"></span>
+    </div>
+  ))}
+    </div>
 
           <div className='row'>
 
@@ -673,7 +690,8 @@ const handleSubmit = async (e) => {
               type="submit" 
               disabled={isDisabled} // Disable button when submitting
             >
-                              {isLoading &&               <ClipLoader color="#fdfdfdff"  loading={isLoading}  size={20} />}
+                              {isLoading &&              
+                               <ClipLoader color="#fdfdfdff"  loading={isLoading}  size={20} />}
 
               <span style={{ marginLeft: '10px' }}>
               
