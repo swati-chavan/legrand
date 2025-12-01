@@ -508,6 +508,148 @@ const validateForm = () => {
   /**************************************************************************************/
   // Submit Form 
 
+  // const handleSubmit = async () => {
+
+  //   // Validate form before submission
+  // const validationErrors = validateForm();
+  
+  // if (validationErrors.length > 0) {
+  //   // Show first 3 errors to avoid overwhelming the user
+  //   validationErrors.slice(0, 3).forEach((error) => {
+  //     toast.error(error);
+  //   });
+    
+  //   if (validationErrors.length > 3) {
+  //     toast.warning(`And ${validationErrors.length - 3} more errors. Please check all fields.`);
+  //   }
+    
+  //   return; // Stop submission
+  // }
+  
+
+  //   setLoading(true);
+  //   setError(null);
+    
+  //   // Transform form data into a structured format for Cosmos DB
+  //   const formattedData = {
+  //     id: `${selectedForm}_${Date.now()}`, // Unique ID for Cosmos DB
+  //     formName: selectedForm,
+  //     formTitle: currentSchema?.Form,
+  //     submittedAt: new Date().toISOString(),
+  //     submittedBy: "test@gamil.com",// Replace with actual user ID
+  //     status: "submitted",
+  //     sections: []
+  //   };
+    
+  //   // Process each section
+  //   currentSchema?.Sections?.forEach((section) => {
+  //     const sectionData = {
+  //       sectionId: section.id,
+  //       sectionLabel: section.Label,
+  //       fields: [],
+  //       tables: []
+  //     };
+      
+  //     // Process regular fields
+  //     section.Fields?.forEach((field) => {
+  //       if (field.Section === "Fields" && field.Type !== "Subsection") {
+  //         sectionData.fields.push({
+  //           fieldId: field.id,
+  //           fieldLabel: field.Label,
+  //           fieldType: field.Type,
+  //           value: formData[field.id] || ""
+  //         });
+  //       }
+        
+  //       // Process table/line items
+  //       if (field.Section === "Line_Items" && field.Type === "Table") {
+  //         const tableData = {
+  //           tableId: field.id,
+  //           tableLabel: field.Label,
+  //           headers: field.Headers?.map(h => ({
+  //             //id: h.id,
+  //             label: h.Label,
+  //             type: h.Type
+  //           })),
+           
+  //           rows: []
+  //         };
+
+  //   /**************************************************************************/
+  //   // Get all rows for this table
+  //       tableRows[field.id]?.forEach((row, rowIdx) => {
+  //         const rowData = {};
+  //         field.Headers?.forEach((header) => {
+  //           // Use Label in lowercase as the key for consistency
+  //           const headerId = header.Label.toLowerCase().replace(/\s+/g, "_");
+  //           const key = `${field.id}-${rowIdx}-${header.id || headerId}`;
+  //           const value = formData[key] || "";
+  //           //console.log(value)
+            
+  //           // Convert to appropriate type
+  //           if (header.Type === "text") {
+  //             rowData[headerId] = value ?? ""
+  //           }
+  //           else if (header.Type === "number") {
+  //             rowData[headerId] = value ? parseFloat(value) : 0;
+  //           } else if (header.Type === "function") {
+  //             // Calculate function fields (e.g., Total = Qty * Price)
+  //             const qtyKey = `${field.id}-${rowIdx}-qty`;
+  //             const priceKey = `${field.id}-${rowIdx}-price`;
+  //             const qty = parseFloat(formData[qtyKey]) || 0;
+  //             const price = parseFloat(formData[priceKey]) || 0;
+  //             rowData[headerId] = qty * price;
+  //           } else {
+  //             rowData[headerId] = 0;
+  //           }
+  //         });
+  //         tableData.rows.push(rowData);
+  //       });
+        
+  //       sectionData.tables.push(tableData);
+  //     }
+  //   });
+    
+  //   formattedData.sections.push(sectionData);
+  // });
+  //   /**************************************************************************/
+    
+  //   console.log("Formatted submission data:", JSON.stringify(formattedData, null, 2));
+  //   //console.log("Formatted submission data:", [formattedData]);
+    
+  //   try {
+  //     const response = await fetch(API.SUBMIT_FORM, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({data:[formattedData]}),
+  //     });
+  //     //console.log(response)
+      
+  //     if (!response.ok) {
+  //       const errorText = await response.text();
+  //       console.error('Error response:', errorText);
+  //       throw new Error(`Failed to submit form: ${response.status}`);
+  //     }
+      
+  //     const result = await response.json();
+  //     console.log("Form submitted successfully:", result);
+  //     toast.success("Form submitted successfully!");
+      
+  //     // Reset form after successful submission
+  //     setFormData({});
+  //     setTableRows({});
+  //     setSelectedForm("");
+  //     setCurrentSchema(null);
+  //   } catch (err) {
+  //     setError('Error submitting form: ' + err.message);
+  //     console.error('Error submitting form:', err);
+  //    toast.error('Error submitting form. Please try again.');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const handleSubmit = async () => {
 
     // Validate form before submission
@@ -526,6 +668,14 @@ const validateForm = () => {
     return; // Stop submission
   }
   
+    // Helper function to get label from value for Radio/Dropdown fields
+  const getDisplayValue = (field, value) => {
+    if ((field.Type === "Radio" || field.Type === "Select") && field.Options) {
+      const option = field.Options.find(opt => opt.Value == value);
+      return option ? option.Label : value;
+    }
+    return value;
+  };
 
     setLoading(true);
     setError(null);
@@ -553,11 +703,14 @@ const validateForm = () => {
       // Process regular fields
       section.Fields?.forEach((field) => {
         if (field.Section === "Fields" && field.Type !== "Subsection") {
+          const rawValue = formData[field.id] || "";
+        const displayValue = getDisplayValue(field, rawValue);
           sectionData.fields.push({
             fieldId: field.id,
             fieldLabel: field.Label,
             fieldType: field.Type,
-            value: formData[field.id] || ""
+            // value: formData[field.id] || ""
+            value: displayValue
           });
         }
         
@@ -592,7 +745,14 @@ const validateForm = () => {
             }
             else if (header.Type === "number") {
               rowData[headerId] = value ? parseFloat(value) : 0;
-            } else if (header.Type === "function") {
+            }else if (header.Type === "select" || header.Type === "radio") {
+              // Get the label instead of numeric value for table dropdowns/radios
+              const displayValue = header.Options 
+                ? header.Options.find(opt => opt.Value == value)?.Label || value
+                : value;
+              rowData[headerId] = displayValue; 
+            }
+            else if (header.Type === "function") {
               // Calculate function fields (e.g., Total = Qty * Price)
               const qtyKey = `${field.id}-${rowIdx}-qty`;
               const priceKey = `${field.id}-${rowIdx}-price`;
@@ -650,6 +810,8 @@ const validateForm = () => {
       setLoading(false);
     }
   };
+
+/**********************************************************************************************************/
 
   return (
     <div className="p-6 max-w-5xl mx-auto bg-gray-50 min-h-screen">
