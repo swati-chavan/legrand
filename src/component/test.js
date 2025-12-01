@@ -389,8 +389,59 @@ const addRow = (field) => {
   /**************************************************************************************/
 // Form Validation
 
-  const validateForm = () => {
+//   const validateForm = () => {
+//   const errors = [];
+  
+//   // Validate regular fields
+//   currentSchema?.Sections?.forEach((section) => {
+//     section.Fields?.forEach((field) => {
+//       // Skip subsections and headings
+//       if (field.Section === "Fields" && field.Type !== "Subsection") {
+//         const value = formData[field.id];
+        
+//         // Check if field is required (you can add a 'Required' property to schema)
+//         // For now, checking if any field is empty
+//         if (!value || value.toString().trim() === "") {
+//           errors.push(`${field.Label} is required`);
+//         }
+//       }
+      
+//       // Validate table fields
+//       if (field.Section === "Line_Items" && field.Type === "Table") {
+//         const rows = tableRows[field.id] || [];
+        
+//         rows.forEach((row, rowIdx) => {
+//           field.Headers?.forEach((header) => {
+//             // Skip function type headers (they're calculated)
+//             if (header.Type !== "function") {
+//               const headerId = header.id || header.Label.replace(/\s+/g, '_').toLowerCase();
+//               const key = `${field.id}-${rowIdx}-${headerId}`;
+//               const value = formData[key];
+              
+//               if (header.Type === "number") {
+//                 if (value === "" || value === null || value === undefined) {
+//                   errors.push(`${field.Label} - Row ${rowIdx + 1}: ${header.Label} is required`);
+//                 }
+//               } else {
+//                 if (!value || value.toString().trim() === "") {
+//                   errors.push(`${field.Label} - Row ${rowIdx + 1}: ${header.Label} is required`);
+//                 }
+//               }
+//             }
+//           });
+//         });
+//       }
+//     });
+//   });
+  
+//   return errors;
+// };
+
+const validateForm = () => {
   const errors = [];
+  
+  // Get the current status value from formData (it will be 1 or 2)
+  const currentStatus = formData['form_ecn_section_rfc_approval_field_status'];
   
   // Validate regular fields
   currentSchema?.Sections?.forEach((section) => {
@@ -399,8 +450,24 @@ const addRow = (field) => {
       if (field.Section === "Fields" && field.Type !== "Subsection") {
         const value = formData[field.id];
         
-        // Check if field is required (you can add a 'Required' property to schema)
-        // For now, checking if any field is empty
+        // Special handling for "Reason for Denial" field
+        if (field.id === "form_ecn_section_rfc_approval_field_reason_for_denial") {
+          // Only required when status is 1 (Denied)
+          if (currentStatus === 1 || currentStatus === "1") {
+            if (!value || value.toString().trim() === "") {
+              errors.push(`Reason for Denial is required when status is denied`);
+            }
+          }
+          // Skip general validation for this field
+          return;
+        }
+        
+        // Skip validation for the Status radio button itself
+        if (field.Type === "Radio") {
+          return;
+        }
+        
+        // General required check for other fields
         if (!value || value.toString().trim() === "") {
           errors.push(`${field.Label} is required`);
         }
@@ -436,6 +503,7 @@ const addRow = (field) => {
   
   return errors;
 };
+
 
   /**************************************************************************************/
   // Submit Form 
