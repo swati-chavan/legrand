@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-function Navbar() {
+function Navbar({ onSearchClick }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -22,12 +22,23 @@ function Navbar() {
                   d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-
-        {/* Menu Items */}
-        <div className={`lg:flex lg:space-x-6 ${isOpen ? "block" : "hidden"} mt-2 lg:mt-0`}>
-          <Link to="/" className="block lg:inline-block hover:text-gray-400">Contact</Link>
-          <Link to="/search" className="block lg:inline-block hover:text-gray-400">Search</Link>
-        </div>
+        {/* Search Button with Icon */}
+          <button
+            onClick={onSearchClick}
+            className="flex items-center gap-2 px-4 py-2 hover:bg-gray-400 hover:text-black text-white rounded-lg transition-colors"
+          >
+            <svg 
+              className="w-5 h-5" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+            <span>Search</span>
+          </button>
       </div>
     </nav>
   );

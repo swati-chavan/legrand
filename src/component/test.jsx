@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import * as API from '../component/Endpoint/Endpoint'
+import * as API from './Endpoint/Endpoint'
 import { toast } from 'react-toastify';
 
 
@@ -856,7 +856,7 @@ const validateForm = () => {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded font-medium text-lg disabled:bg-gray-400"
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-medium text-lg disabled:bg-gray-400"
             >
               {loading ? 'Submitting...' : 'Submit Form'}
             </button>
